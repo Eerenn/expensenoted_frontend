@@ -13,7 +13,7 @@ class ProfileScreen extends StatelessWidget {
   final _selectedIndex = 2;
 
   void _launchURL() async {
-    const _url = 'https://github.com/Eerenn/expense_noted_frontend';
+    const _url = 'https://github.com/Eerenn/expensenoted_frontend';
     if (!await launch(_url)) throw 'Could not launch $_url';
   }
 
