@@ -1,6 +1,6 @@
-# expensenoted
+# Expense Noted
 
-A new Flutter project.
+A personal Flutter project.
 
 ## Getting Started
 
