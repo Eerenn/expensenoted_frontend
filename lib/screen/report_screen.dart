@@ -155,8 +155,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                     .getTopEntry(entries.getEntries, _selected!)
                                     .entryTypeList
                                     .length *
-                                100 -
-                            100,
+                                100,
                         child: ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: entries
@@ -172,32 +171,34 @@ class _ReportScreenState extends State<ReportScreen> {
                               child: Card(
                                 elevation: 4,
                                 child: Center(
-                                    child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 30, horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        formatDate(
-                                            'dd MMMM',
-                                            entries
-                                                .getTopEntry(entries.getEntries,
-                                                    _selected!)
-                                                .entryTypeList[index]
-                                                .dateTime),
-                                      ),
-                                      Text(entries
-                                          .getTopEntry(
-                                              entries.getEntries, _selected!)
-                                          .entryTypeList[index]
-                                          .entry),
-                                      Text(
-                                          '${entries.getTopEntry(entries.getEntries, _selected!).entryTypeList[index].total}'),
-                                    ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 30, horizontal: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          formatDate(
+                                              'dd MMMM',
+                                              entries
+                                                  .getTopEntry(
+                                                      entries.getEntries,
+                                                      _selected!)
+                                                  .entryTypeList[index]
+                                                  .dateTime),
+                                        ),
+                                        Text(entries
+                                            .getTopEntry(
+                                                entries.getEntries, _selected!)
+                                            .entryTypeList[index]
+                                            .entry),
+                                        Text(
+                                            '${entries.getTopEntry(entries.getEntries, _selected!).entryTypeList[index].total}'),
+                                      ],
+                                    ),
                                   ),
-                                )),
+                                ),
                               ),
                             );
                           },
