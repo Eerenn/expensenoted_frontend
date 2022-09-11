@@ -48,3 +48,5 @@ app.*.map.json
 #cus ignore
 /assets/.env
 app/notebuddykey.jks
+
+pubspec.lock

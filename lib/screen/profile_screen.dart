@@ -14,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
 
   void _launchURL() async {
     const _url = 'https://github.com/Eerenn/expensenoted_frontend';
+    // ignore: deprecated_member_use
     if (!await launch(_url)) throw 'Could not launch $_url';
   }
 

@@ -19,7 +19,7 @@ class EntryTogglePick extends StatefulWidget {
 }
 
 class _EntryTogglePickState extends State<EntryTogglePick> {
-  bool _expandToggle = false;
+  bool _expandToggle = true;
   List<EntryCategory> _categories = [];
 
   Future<List<EntryCategory>> _getAllCategories() async {

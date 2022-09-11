@@ -3,6 +3,7 @@ import 'package:expensenoted/widget/btn_nav_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:expensenoted/providers/entry_provider.dart';
 import 'package:expensenoted/widget/entries_list_widget.dart';
+import 'package:flutter/physics.dart';
 import 'package:provider/provider.dart';
 
 import 'pick_date_screen.dart';
@@ -59,6 +60,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
       ),
       body: SafeArea(
         child: PageView(
+          physics: const SpeedUpScrollPhysics(),
           onPageChanged: (value) {
             if (value == 1) {
               setState(() {
@@ -91,4 +93,20 @@ class _OverviewScreenState extends State<OverviewScreen> {
       ),
     );
   }
+}
+
+class SpeedUpScrollPhysics extends ScrollPhysics {
+  const SpeedUpScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
+
+  @override
+  SpeedUpScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return SpeedUpScrollPhysics(parent: buildParent(ancestor)!);
+  }
+
+  @override
+  SpringDescription get spring => const SpringDescription(
+        mass: 50,
+        stiffness: 100,
+        damping: 2,
+      );
 }

@@ -24,6 +24,7 @@ class _EntryInputFieldState extends State<EntryInputField> {
   final List<String> _type = ['bank', 'tng', 'cash', 'other'];
   bool _toggleTextArea = false;
   String _selectedValue = '';
+  // ignore: prefer_final_fields
   List<String> _builder = ['bank', '', ''];
   String _buildString = '';
 

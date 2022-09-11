@@ -51,10 +51,11 @@ class _EntriesListState extends State<EntriesList>
 
   Future<void> _asyncMethod() async {
     await widget.entries.getUserEntries();
-
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
