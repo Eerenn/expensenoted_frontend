@@ -3,7 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {
   static IOSOptions _getIOSOptions() =>
-      const IOSOptions(accessibility: IOSAccessibility.first_unlock);
+      // const IOSOptions(accessibility: IOSAccessibility.first_unlock);
+      const IOSOptions(accessibility: KeychainAccessibility.first_unlock);
 
   static AndroidOptions _getAndroidOptions() => const AndroidOptions(
         encryptedSharedPreferences: true,

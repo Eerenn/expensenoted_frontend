@@ -73,8 +73,10 @@ class User with ChangeNotifier, GoogleSignInAPI, SecureStorage {
           .post(uri, headers: header, body: json.encode({'user': mapUser}))
           .timeout(
             const Duration(seconds: 6),
-          ); //post user to backend
-
+          )
+          .onError((error, stackTrace) {
+        throw Exception(error);
+      }); //post user to backend
       if (response.statusCode != 201) {
         return throw Exception('Google Service error');
       }

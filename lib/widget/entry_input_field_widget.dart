@@ -1,3 +1,4 @@
+import 'package:expensenoted/modal/entry_chart.dart';
 import 'package:expensenoted/modal/entry_modal.dart';
 import 'package:expensenoted/secure_storage.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +22,9 @@ class EntryInputField extends StatefulWidget {
 }
 
 class _EntryInputFieldState extends State<EntryInputField> {
-  final List<String> _type = ['bank', 'tng', 'cash', 'other'];
   bool _toggleTextArea = false;
   String _selectedValue = '';
-  // ignore: prefer_final_fields
-  List<String> _builder = ['bank', '', ''];
+  final List<String> _builder = ['', '', ''];
   String _buildString = '';
 
   Future<bool> _asyncMethod() async {
@@ -70,15 +69,16 @@ class _EntryInputFieldState extends State<EntryInputField> {
                               keyboardType: TextInputType.multiline,
                               maxLines: null,
                               minLines: 3,
+                              autofocus: true,
                             )
                           : Row(
                               children: [
                                 DropdownButton(
-                                  items: _type.map(
+                                  items: EntryType.values.map(
                                     (val) {
                                       return DropdownMenuItem(
-                                        child: Text(val),
-                                        value: val,
+                                        child: Text(val.name.toString()),
+                                        value: val.name,
                                       );
                                     },
                                   ).toList(),
@@ -91,8 +91,10 @@ class _EntryInputFieldState extends State<EntryInputField> {
                                     });
                                   },
                                   value: _selectedValue == ''
-                                      ? _type.first
-                                      : _selectedValue,
+                                      ? EntryType.values.first.name
+                                      : EntryType.values
+                                          .byName(_selectedValue)
+                                          .name,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -100,10 +102,13 @@ class _EntryInputFieldState extends State<EntryInputField> {
                                   child: SizedBox(
                                     width: deviceSize.width * 0.5,
                                     child: TextFormField(
+                                      initialValue: _builder[1],
                                       onChanged: (val) {
                                         setState(() {
                                           if (_builder[0] == '') {
-                                            _builder[0] == _type[0];
+                                            _builder[0] ==
+                                                EntryType.values.first.name
+                                                    .toString();
                                           }
                                           _builder[1] = val.toString();
                                           _buildString = _builder.join(' ');
@@ -119,7 +124,8 @@ class _EntryInputFieldState extends State<EntryInputField> {
                                 ),
                                 SizedBox(
                                   width: deviceSize.width * 0.1,
-                                  child: TextField(
+                                  child: TextFormField(
+                                    initialValue: _builder[2],
                                     onChanged: (val) {
                                       setState(() {
                                         _builder[2] = val.toString();

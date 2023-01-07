@@ -8,7 +8,7 @@ class EntryChart {
   });
 }
 
-enum EntryType { tng, bank, cash, other }
+enum EntryType { bank, cash, tng, other }
 
 class EntryTypeChart {
   EntryType type;

@@ -9,9 +9,14 @@ import 'package:expensenoted/modal/entry_modal.dart';
 
 class Entries with ChangeNotifier {
   final List<Entry> _entries = [];
+  final List<Entry> _partialEntries = [];
 
   List<Entry> get getEntries {
     return [..._entries];
+  }
+
+  List<Entry> get getPartialEntries {
+    return [..._partialEntries];
   }
 
   final httpI = InterceptedHttp.build(interceptors: [
@@ -19,7 +24,7 @@ class Entries with ChangeNotifier {
   ]);
 
   Future getUserEntries() async {
-    Uri uri = Uri.parse('$domain/entries');
+    Uri uri = Uri.parse('$domain/entries/all');
 
     try {
       final response = await httpI.get(uri);
@@ -43,23 +48,80 @@ class Entries with ChangeNotifier {
     } catch (_) {}
   }
 
+  bool getMonthByListIsEmpty(DateTime date) {
+    return _entries
+        .where((element) =>
+            element.date.year == date.year && element.date.month == date.month)
+        .toList()
+        .isEmpty;
+  }
+
+  Future getUserPartialEntries(int? month) async {
+    Uri uri = Uri.parse('$domain/entries/partial?month=$month');
+
+    try {
+      final response = await httpI.get(uri);
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+
+        List<Entry> entriesList =
+            (json as List).map((e) => Entry.fromJson(e)).toList();
+        entriesList.sort(
+          (a, b) => b.date.compareTo(
+            a.date,
+          ),
+        );
+
+        _partialEntries.clear();
+        _partialEntries.addAll(entriesList
+            .where((entry) => _partialEntries.every((e) => entry.id != e.id)));
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
 //filter entries by month
-  List<Entry> filterByMonth(DateTime dateTime) {
-    List<Entry> list = [];
-    for (Entry ent in _entries.where((element) =>
-        element.date.month == dateTime.month &&
-        element.date.year == dateTime.year)) {
-      list.add(
-        Entry(
-          id: ent.id,
-          categories: ent.categories,
-          text: ent.text,
-          worthiness: ent.worthiness,
-          date: ent.date,
-        ),
-      );
+  Future<List<Entry>> filterByMonth(DateTime dateTime) async {
+    Uri uri = Uri.parse('$domain/entries/date?date=$dateTime');
+
+    try {
+      final response = await httpI.get(uri);
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+
+        List<Entry> entriesList =
+            (json as List).map((e) => Entry.fromJson(e)).toList();
+        entriesList.sort(
+          (a, b) => b.date.compareTo(
+            a.date,
+          ),
+        );
+        _entries.addAll(entriesList
+            .where((entry) => _entries.every((e) => entry.id != e.id)));
+
+        notifyListeners();
+      }
+    } catch (_) {
+    } finally {
+      return _entries;
     }
-    return list;
+    // List<Entry> list = [];
+    // for (Entry ent in _entries.where((element) =>
+    //     element.date.month == dateTime.month &&
+    //     element.date.year == dateTime.year)) {
+    //   list.add(
+    //     Entry(
+    //       id: ent.id,
+    //       categories: ent.categories,
+    //       text: ent.text,
+    //       worthiness: ent.worthiness,
+    //       date: ent.date,
+    //     ),
+    //   );
+    // }
+    // return list;
   }
 
 //build circular chart (breakdown entries into lines then sum total)
@@ -96,16 +158,20 @@ class Entries with ChangeNotifier {
   }
 
 //construct bar chart (breakdown all entries into total sum of bank, tng, cash and others)
-  EntryTypeMonthChart getEntryTypeChart(
-      List<Entry> entries, DateTime dateTime) {
+  EntryTypeMonthChart getEntryTypeChart(List<Entry> entries) {
     EntryTypeMonthChart entryTypeMonthChart = EntryTypeMonthChart(
       entryTypeList: [],
       month: DateTime.now(),
     );
 
-    for (Entry ent in entries.where((element) =>
-        element.date.month == dateTime.month &&
-        element.date.year == dateTime.year)) {
+    // for (Entry ent in entries.where((element) =>
+    //     element.date.month == dateTime.month &&
+    //     element.date.year == dateTime.year)) {
+    //   entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
+    //   entryTypeMonthChart.month = DateTime.now();
+    // }
+
+    for (Entry ent in entries) {
       entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
       entryTypeMonthChart.month = DateTime.now();
     }
@@ -151,5 +217,11 @@ class Entries with ChangeNotifier {
       total += item.total;
     }
     return total;
+  }
+
+  void clearEntriesCache() {
+    _entries.clear();
+    _partialEntries.clear();
+    notifyListeners();
   }
 }

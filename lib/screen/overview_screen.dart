@@ -44,17 +44,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
           )
         ],
         centerTitle: true,
-        title: Container(),
-        // const Padding(
-        //   padding: EdgeInsets.symmetric(vertical: 20.0),
-        //   child: Hero(
-        //     tag: 'logo',
-        //     child: Image(
-        //       image: AssetImage('assets/custom/app_logo.png'),
-        //       height: 50,
-        //     ),
-        //   ),
-        // ),
         backgroundColor: Theme.of(context).colorScheme.onBackground,
         elevation: 0,
       ),

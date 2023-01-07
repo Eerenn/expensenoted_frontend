@@ -31,6 +31,8 @@ class _EntriesListState extends State<EntriesList>
     curve: Curves.easeInSine,
   ));
   bool _isLoading = true;
+  int _monthRange = 3;
+
   @override
   void initState() {
     super.initState();
@@ -38,9 +40,7 @@ class _EntriesListState extends State<EntriesList>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     )..forward();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _asyncMethod();
-    });
+    WidgetsBinding.instance?.addPostFrameCallback((_) => _asyncMethod(false));
   }
 
   @override
@@ -49,8 +49,18 @@ class _EntriesListState extends State<EntriesList>
     super.dispose();
   }
 
-  Future<void> _asyncMethod() async {
-    await widget.entries.getUserEntries();
+  Future<void> _asyncMethod(bool force) async {
+    widget.entries.getPartialEntries.isEmpty
+        ? await widget.entries.getUserPartialEntries(_monthRange)
+        : force
+            ? await widget.entries.getUserPartialEntries(_monthRange)
+            : null;
+
+    if (widget.entries.getPartialEntries.length < 6 && _monthRange < 13) {
+      _monthRange += 3;
+      await widget.entries.getUserPartialEntries(_monthRange);
+      _asyncMethod(true);
+    }
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -66,12 +76,13 @@ class _EntriesListState extends State<EntriesList>
                 EdgeInsets.symmetric(vertical: widget.deviceSize.height / 4),
             child: const CircularProgressIndicator(),
           )
-        : widget.entries.getEntries.isNotEmpty
+        : widget.entries.getPartialEntries.isNotEmpty
             ? Expanded(
+                flex: 1,
                 child: RefreshIndicator(
-                  onRefresh: _asyncMethod,
+                  onRefresh: (() => _asyncMethod(true)),
                   child: StickyGroupedListView(
-                    elements: widget.entries.getEntries,
+                    elements: widget.entries.getPartialEntries,
                     order: StickyGroupedListOrder.DESC,
                     stickyHeaderBackgroundColor:
                         Theme.of(context).colorScheme.onBackground,
@@ -139,6 +150,9 @@ class _EntriesListState extends State<EntriesList>
                                           index: index,
                                           entry: entry,
                                           action: EntryAction.editExisting,
+                                          cb: (bool force) async {
+                                            await _asyncMethod(force);
+                                          },
                                         ),
                                       ),
                                     );
@@ -217,29 +231,32 @@ class _EntriesListState extends State<EntriesList>
                 ),
               )
             : Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 40.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Image(
-                        image: AssetImage('assets/custom/vector1.png'),
-                        height: 250,
-                      ),
-                      SizedBox(
-                        width: 250,
-                        child: Text(
-                          'Seems like no entry added yet, swipe right to add one!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            letterSpacing: 0.3,
-                          ),
-                          textAlign: TextAlign.center,
+                child: RefreshIndicator(
+                  onRefresh: () => _asyncMethod(true),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 40.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Image(
+                          image: AssetImage('assets/custom/vector1.png'),
+                          height: 250,
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 250,
+                          child: Text(
+                            'Seems like no entry added yet, swipe right to add one!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              letterSpacing: 0.3,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

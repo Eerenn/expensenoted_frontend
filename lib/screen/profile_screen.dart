@@ -1,5 +1,6 @@
 import 'package:expensenoted/constant.dart';
 import 'package:expensenoted/providers/auth_provider.dart';
+import 'package:expensenoted/providers/entry_provider.dart';
 import 'package:expensenoted/screen/loading_screen.dart';
 import 'package:expensenoted/widget/btn_nav_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
   static const routeName = '/profile';
 
-  final _selectedIndex = 2;
+  final _selectedIndex = 3;
 
   void _launchURL() async {
     const _url = 'https://github.com/Eerenn/expensenoted_frontend';
@@ -21,6 +22,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
+    final entries = Provider.of<Entries>(context);
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       bottomNavigationBar: BtmNavBar(selectedIndex: _selectedIndex),
@@ -73,8 +75,9 @@ class ProfileScreen extends StatelessWidget {
               ),
               const Divider(),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   user.googleLogOut();
+                  entries.clearEntriesCache();
                   Navigator.of(context)
                       .pushReplacementNamed(LoadingScreen.routeName);
                 },

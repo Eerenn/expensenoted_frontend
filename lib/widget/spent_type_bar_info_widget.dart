@@ -16,85 +16,40 @@ class SpentTypeBarInfo extends StatelessWidget {
       direction: Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            SizedBox(
-              width: deviceSize.height * 0.01,
-              height: deviceSize.height * 0.01,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorBar1,
-                  borderRadius: BorderRadius.circular(3),
+        for (EntryType entryType in EntryType.values)
+          Flex(
+            direction: Axis.horizontal,
+            children: [
+              SizedBox(
+                width: deviceSize.height * 0.01,
+                height: deviceSize.height * 0.01,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: getColor(entryType),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(EntryType.bank.name),
-            )
-          ],
-        ),
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            SizedBox(
-              width: deviceSize.height * 0.01,
-              height: deviceSize.height * 0.01,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorBar2,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(EntryType.cash.name),
-            )
-          ],
-        ),
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            SizedBox(
-              width: deviceSize.height * 0.01,
-              height: deviceSize.height * 0.01,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorBar3,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(EntryType.tng.name),
-            )
-          ],
-        ),
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            SizedBox(
-              width: deviceSize.height * 0.01,
-              height: deviceSize.height * 0.01,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorBar4,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-              ),
-              child: Text(EntryType.other.name),
-            )
-          ],
-        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(entryType.name),
+              )
+            ],
+          ),
       ],
     );
+  }
+
+  Color getColor(EntryType entryType) {
+    switch (entryType) {
+      case EntryType.bank:
+        return colorBar1;
+      case EntryType.cash:
+        return colorBar2;
+      case EntryType.tng:
+        return colorBar3;
+      case EntryType.other:
+        return colorBar4;
+    }
   }
 }

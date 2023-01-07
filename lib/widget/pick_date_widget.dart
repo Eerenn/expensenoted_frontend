@@ -39,6 +39,7 @@ class PickDateWidget extends StatelessWidget {
                           id: '',
                         ),
                         action: EntryAction.createNew,
+                        cb: (force) {},
                       ),
                     ),
                   );
@@ -47,7 +48,7 @@ class PickDateWidget extends StatelessWidget {
 
               case 'Today':
                 {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (ctx) => ModifyEntryScreen(
@@ -60,6 +61,7 @@ class PickDateWidget extends StatelessWidget {
                           id: '',
                         ),
                         action: EntryAction.createNew,
+                        cb: (force) {},
                       ),
                     ),
                   );
@@ -90,6 +92,7 @@ class PickDateWidget extends StatelessWidget {
                             id: '',
                           ),
                           action: EntryAction.createNew,
+                          cb: (force) {},
                         ),
                       ),
                     );

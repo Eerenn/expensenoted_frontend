@@ -142,13 +142,13 @@ class Entry {
     List<String> line = [];
     for (var e in split) {
       final eachLine = e.split(' ');
-      eachLine[eachLine.length - 1] =
-          checkDouble(eachLine[eachLine.length - 1].toString())
-              .toStringAsFixed(2);
       if (eachLine.length < 3) {
         eachLine.add(('expense'));
         eachLine.add((0.1).toStringAsFixed(2));
       }
+      eachLine.last = checkDouble(eachLine.last.toString())
+          ? double.parse(eachLine.last.toString()).toStringAsFixed(2)
+          : eachLine.last.toString() + ' 0.10';
       eachLine.removeWhere((element) => element == '');
       final newLine = eachLine.join('#');
       line.add(newLine);
@@ -156,9 +156,13 @@ class Entry {
     return line.join(',');
   }
 
-  double checkDouble(String text) {
-    final clean = text.replaceAll(RegExp(r'[^0-9\.]'), '');
-    return double.tryParse(clean) ?? 0.1;
+  bool checkDouble(String text) {
+    try {
+      double.parse(text);
+      return true;
+    } on Exception {
+      return false;
+    }
   }
 
 // get total of each entry
@@ -171,8 +175,8 @@ class Entry {
       for (var element in split) {
         final replace = element.replaceAll(' ', '#');
         final entry = replace.split('#');
-        final price = entry[entry.length - 1];
-        total += double.parse(price);
+        final price = entry.last;
+        total += double.tryParse(price) ?? 0.1;
       }
     } catch (err) {
       throw Exception('invalid input');

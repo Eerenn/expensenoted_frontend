@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 const header = {"Content-Type": "application/json"};
 
-// const domain = 'http://192.168.0.104:3000';
+// const domain = 'http://192.168.0.189:3000';
 const domain = 'http://66.228.55.7:3000';
 
 const colorBar1 = Color(0xFFf3724f);

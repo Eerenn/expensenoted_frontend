@@ -1,6 +1,7 @@
 import 'package:expensenoted/screen/overview_screen.dart';
 import 'package:expensenoted/screen/profile_screen.dart';
 import 'package:expensenoted/screen/report_screen.dart';
+import 'package:expensenoted/screen/goal_screen.dart';
 import 'package:flutter/material.dart';
 
 class BtmNavBar extends StatelessWidget {
@@ -30,6 +31,11 @@ class BtmNavBar extends StatelessWidget {
         case 2:
           _selectedIndex == index
               ? null
+              : Navigator.pushReplacementNamed(context, GoalScreen.routeName);
+          break;
+        case 3:
+          _selectedIndex == index
+              ? null
               : Navigator.pushReplacementNamed(
                   context, ProfileScreen.routeName);
           break;
@@ -37,6 +43,7 @@ class BtmNavBar extends StatelessWidget {
     }
 
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       elevation: 10,
       items: const [
         BottomNavigationBarItem(
@@ -48,12 +55,17 @@ class BtmNavBar extends StatelessWidget {
           label: 'Report',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.checklist),
+          label: 'Goal',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.account_circle_outlined),
           label: 'Profile',
         ),
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Theme.of(context).colorScheme.tertiary,
+      unselectedItemColor: Colors.grey[700],
       onTap: _onItemTapped,
     );
   }

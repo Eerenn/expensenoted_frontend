@@ -13,11 +13,14 @@ class ModifyEntryScreen extends StatelessWidget {
     required this.index,
     required this.entry,
     required this.action,
+    required this.cb,
   }) : super(key: key);
 
   final int index;
   final Entry entry;
   final EntryAction action;
+
+  final Function(bool) cb;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +50,9 @@ class ModifyEntryScreen extends StatelessWidget {
                 ? IconButton(
                     onPressed: (() async {
                       await entry.deleteEntry(entry);
+
+                      //callback force entry refresh
+                      await cb(true);
                       Navigator.pushReplacementNamed(
                           context, OverviewScreen.routeName);
                     }),
@@ -76,6 +82,8 @@ class ModifyEntryScreen extends StatelessWidget {
                           ? await entry.createEntry(entry)
                           : null;
 
+                  //callback force entry refresh
+                  await cb(true);
                   Navigator.pushReplacementNamed(
                       context, OverviewScreen.routeName);
                 }),
