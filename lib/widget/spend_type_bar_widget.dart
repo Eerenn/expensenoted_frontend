@@ -28,7 +28,7 @@ class SpentTypeBar extends StatelessWidget {
             triggerMode: TooltipTriggerMode.tap,
             //get from chart total amount of each entryType
             message: entries
-                .getEntryTypeChart(entries.getEntries)
+                .getEntryTypeChart(entries.getEntries, selected)
                 .entryTypeList
                 .firstWhere((element) => element.type == entryType)
                 .total
@@ -43,7 +43,7 @@ class SpentTypeBar extends StatelessWidget {
               height: height,
               width: (deviceSize.width *
                       entries
-                          .getEntryTypeChart(entries.getEntries)
+                          .getEntryTypeChart(entries.getEntries, selected)
                           .overallSpent(entryType)) *
                   0.8,
             ),

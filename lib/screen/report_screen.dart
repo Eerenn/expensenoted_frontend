@@ -1,5 +1,8 @@
 import 'package:expensenoted/modal/entry_chart.dart';
+import 'package:expensenoted/modal/entry_modal.dart';
 import 'package:expensenoted/providers/entry_provider.dart';
+import 'package:expensenoted/screen/modify_entry_screen.dart';
+import 'package:expensenoted/screen/single_entry_screen.dart';
 import 'package:expensenoted/widget/btn_nav_bar_widget.dart';
 import 'package:expensenoted/widget/spend_type_bar_widget.dart';
 import 'package:expensenoted/widget/spent_type_bar_info_widget.dart';
@@ -30,6 +33,8 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     final entries = Provider.of<Entries>(context, listen: false);
+    final sortedEntries = Provider.of<Entries>(context, listen: false)
+        .getTopEntry(entries.getEntries, _selected!);
     return Scaffold(
       bottomNavigationBar: BtmNavBar(selectedIndex: _selectedIndex),
       body: SafeArea(
@@ -105,61 +110,41 @@ class _ReportScreenState extends State<ReportScreen> {
                     child: Column(
                       // direction: Axis.vertical,
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).colorScheme.onBackground,
-                          ),
-                          onPressed: () async {
-                            final selected = await showMonthYearPicker(
-                              context: context,
-                              initialDate: _selected ?? DateTime.now(),
-                              firstDate: DateTime(2019),
-                              lastDate: DateTime(
-                                  DateTime.now().year, DateTime.now().month),
-                              locale: const Locale('en'),
-                            );
-                            if (selected != null) {
-                              setState(() {
-                                _selected = selected;
-                              });
-                            }
-                          },
-                          child: Text(
-                            'Report Month: ${formatDate('MMMM, yyyy', _selected!)}',
-                            style: const TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                        SfCircularChart(
-                          legend: Legend(isVisible: true),
-                          title: ChartTitle(
-                            text:
-                                'Your spent on ${formatDate('MMMM, yyyy', _selected!)}',
-                            textStyle: const TextStyle(
-                              letterSpacing: 1.2,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          series: <CircularSeries>[
-                            DoughnutSeries<EntryChart, String>(
-                              dataSource: entries.getEntryChart(
-                                  entries.getEntries, _selected!),
-                              xValueMapper: (EntryChart entry, _) =>
-                                  formatDate('dd MMMM', entry.date),
-                              yValueMapper: (EntryChart entry, _) =>
-                                  double.parse(
-                                entry.total.toStringAsFixed(2),
+                        SizedBox(
+                          height: 270,
+                          child: SfCircularChart(
+                            margin: const EdgeInsets.symmetric(vertical: 20),
+                            legend: Legend(isVisible: true),
+                            title: ChartTitle(
+                              text:
+                                  'Your spent on ${formatDate('MMMM, yyyy', _selected!)}',
+                              textStyle: const TextStyle(
+                                letterSpacing: 1.2,
+                                fontWeight: FontWeight.w400,
                               ),
-                              dataLabelSettings: const DataLabelSettings(
-                                isVisible: true,
-                                color: Colors.white,
-                              ),
-                              explode: true,
-                              explodeAll: true,
                             ),
-                          ],
+                            series: <CircularSeries>[
+                              DoughnutSeries<EntryChart, String>(
+                                dataSource: entries.getEntryChart(
+                                    entries.getEntries, _selected!),
+                                xValueMapper: (EntryChart entry, _) =>
+                                    formatDate('dd MMMM', entry.date),
+                                yValueMapper: (EntryChart entry, _) =>
+                                    double.parse(
+                                  entry.total.toStringAsFixed(2),
+                                ),
+                                dataLabelSettings: const DataLabelSettings(
+                                  isVisible: true,
+                                  color: Colors.white,
+                                ),
+                                explode: true,
+                                explodeAll: true,
+                              ),
+                            ],
+                          ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
                           child: Flex(
                               direction: Axis.horizontal,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -185,8 +170,68 @@ class _ReportScreenState extends State<ReportScreen> {
                                 ),
                               ]),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
+                                onPressed: () async {
+                                  final selected = await showMonthYearPicker(
+                                    context: context,
+                                    initialDate: _selected ?? DateTime.now(),
+                                    firstDate: DateTime(2019),
+                                    lastDate: DateTime(DateTime.now().year,
+                                        DateTime.now().month),
+                                    locale: const Locale('en'),
+                                    builder: (context, child) {
+                                      return Column(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 100.0),
+                                            child: SizedBox(
+                                              height: 520,
+                                              child: child,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  if (selected != null) {
+                                    setState(() {
+                                      _selected = selected;
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  'Report Month: ${formatDate('MMMM, yyyy', _selected!)}',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
+                              ),
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.refresh_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {});
+                                  })
+                            ],
+                          ),
+                        ),
                         const Padding(
-                          padding: EdgeInsets.only(top: 40.0),
+                          padding: EdgeInsets.only(top: 20.0),
                           child: Text(
                             'Overall Spent Type',
                             style: TextStyle(
@@ -198,7 +243,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 25.0, horizontal: 30),
+                              vertical: 20.0, horizontal: 30),
                           child: SpentTypeBar(
                               deviceSize: deviceSize,
                               entries: entries,
@@ -219,50 +264,69 @@ class _ReportScreenState extends State<ReportScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: entries
-                                  .getTopEntry(entries.getEntries, _selected!)
-                                  .entryTypeList
-                                  .length *
-                              100,
+                          height: sortedEntries.entryTypeList.length * 100,
                           child: ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: entries
-                                .getTopEntry(entries.getEntries, _selected!)
-                                .entryTypeList
-                                .length,
+                            itemCount: sortedEntries.entryTypeList.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12.0,
                                   vertical: 4.0,
                                 ),
-                                child: Card(
-                                  elevation: 4,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 30, horizontal: 20),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          formatDate(
-                                              'dd MMMM',
-                                              entries
-                                                  .getTopEntry(
-                                                      entries.getEntries,
-                                                      _selected!)
-                                                  .entryTypeList[index]
-                                                  .dateTime),
+                                child: InkWell(
+                                  onDoubleTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (ctx) => SingleEntryScreen(
+                                          index: index,
+                                          entry: sortedEntries
+                                              .findEntryFromSortedEntryType(
+                                                  entries.getEntries, index),
                                         ),
-                                        Text(entries
-                                            .getTopEntry(
-                                                entries.getEntries, _selected!)
-                                            .entryTypeList[index]
-                                            .entry),
-                                        Text(
-                                            '${entries.getTopEntry(entries.getEntries, _selected!).entryTypeList[index].total}'),
-                                      ],
+                                      ),
+                                    );
+                                  },
+                                  onLongPress: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (ctx) => ModifyEntryScreen(
+                                          index: index,
+                                          entry: sortedEntries
+                                              .findEntryFromSortedEntryType(
+                                                  entries.getEntries, index),
+                                          action: EntryAction.editExisting,
+                                          cb: (bool force) async {
+                                            return;
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    elevation: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 30, horizontal: 20),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            formatDate(
+                                                'dd MMMM',
+                                                sortedEntries
+                                                    .entryTypeList[index]
+                                                    .dateTime),
+                                          ),
+                                          Text(sortedEntries
+                                              .entryTypeList[index].entry),
+                                          Text(
+                                              '${sortedEntries.entryTypeList[index].total}'),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

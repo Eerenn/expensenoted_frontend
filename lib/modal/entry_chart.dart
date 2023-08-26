@@ -1,3 +1,5 @@
+import 'entry_modal.dart';
+
 class EntryChart {
   DateTime date;
   double total;
@@ -11,12 +13,14 @@ class EntryChart {
 enum EntryType { bank, cash, tng, other }
 
 class EntryTypeChart {
+  String id;
   EntryType type;
   String entry;
   double total;
   DateTime dateTime;
 
   EntryTypeChart({
+    required this.id,
     required this.type,
     required this.entry,
     required this.total,
@@ -26,11 +30,11 @@ class EntryTypeChart {
 
 class EntryTypeMonthChart {
   List<EntryTypeChart> entryTypeList;
-  DateTime month;
+  DateTime date;
 
   EntryTypeMonthChart({
     required this.entryTypeList,
-    required this.month,
+    required this.date,
   });
 
   double overallSpent(EntryType et) {
@@ -43,5 +47,10 @@ class EntryTypeMonthChart {
         .total;
 
     return typeTotal / total;
+  }
+
+  Entry findEntryFromSortedEntryType(List<Entry> entries, int index) {
+    return entries
+        .firstWhere((element) => element.id == entryTypeList[index].id);
   }
 }

@@ -3,7 +3,6 @@ import 'package:expensenoted/screen/profile_screen.dart';
 import 'package:expensenoted/screen/report_screen.dart';
 import 'package:expensenoted/screen/goal_screen.dart';
 import 'package:expensenoted/screen/user_guideline_screen.dart';
-import 'package:expensenoted/widget/spend_type_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:expensenoted/providers/auth_provider.dart';
 import 'package:expensenoted/providers/entry_provider.dart';

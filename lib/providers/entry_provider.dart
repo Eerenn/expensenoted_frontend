@@ -158,26 +158,25 @@ class Entries with ChangeNotifier {
   }
 
 //construct bar chart (breakdown all entries into total sum of bank, tng, cash and others)
-  EntryTypeMonthChart getEntryTypeChart(List<Entry> entries) {
+  EntryTypeMonthChart getEntryTypeChart(
+      List<Entry> entries, DateTime selected) {
+    EntryTypeMonthChart chart = entriesByMonth(entries, selected);
+    chart.entryTypeList = Entry.cleanEntryType(chart.entryTypeList);
+
+    return chart;
+  }
+
+  EntryTypeMonthChart entriesByMonth(List<Entry> entries, DateTime selected) {
     EntryTypeMonthChart entryTypeMonthChart = EntryTypeMonthChart(
-      entryTypeList: [],
-      month: DateTime.now(),
+      entryTypeList: List.empty(growable: true),
+      date: DateTime.now(),
     );
 
-    // for (Entry ent in entries.where((element) =>
-    //     element.date.month == dateTime.month &&
-    //     element.date.year == dateTime.year)) {
-    //   entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-    //   entryTypeMonthChart.month = DateTime.now();
-    // }
-
     for (Entry ent in entries) {
-      entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-      entryTypeMonthChart.month = DateTime.now();
+      if (ent.date.month == selected.month && ent.date.year == selected.year) {
+        entryTypeMonthChart.entryTypeList.addAll(Entry.getEntryType(ent));
+      }
     }
-    entryTypeMonthChart.entryTypeList =
-        Entry.cleanEntryType(entryTypeMonthChart.entryTypeList);
-
     return entryTypeMonthChart;
   }
 
@@ -185,15 +184,15 @@ class Entries with ChangeNotifier {
   EntryTypeMonthChart getTopEntry(List<Entry> entries, DateTime dateTime) {
     EntryTypeMonthChart entryTypeMonthChart = EntryTypeMonthChart(
       entryTypeList: [],
-      month: DateTime.now(),
+      date: DateTime.now(),
     );
 
     for (Entry ent in entries.where((element) =>
         element.date.month == dateTime.month &&
         element.date.year == dateTime.year)) {
-      entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-      entryTypeMonthChart.month = DateTime.now();
+      entryTypeMonthChart.entryTypeList.addAll(Entry.getEntryType(ent));
     }
+
     entryTypeMonthChart.entryTypeList.sort(
       (a, b) => a.total.compareTo(b.total),
     );
