@@ -21,7 +21,11 @@ class _GoalScreenState extends State<GoalScreen> {
     final deviceSize = MediaQuery.of(context).size;
     final entries = Provider.of<Entries>(context);
     return Scaffold(
-      body: Container(),
+      body: SafeArea(
+        child: Container(
+          child: Text('Add Goal'),
+        ),
+      ),
 
       // SingleChildScrollView(
       //   child: SizedBox(

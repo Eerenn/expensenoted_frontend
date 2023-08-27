@@ -107,21 +107,19 @@ class Entries with ChangeNotifier {
     } finally {
       return _entries;
     }
-    // List<Entry> list = [];
-    // for (Entry ent in _entries.where((element) =>
-    //     element.date.month == dateTime.month &&
-    //     element.date.year == dateTime.year)) {
-    //   list.add(
-    //     Entry(
-    //       id: ent.id,
-    //       categories: ent.categories,
-    //       text: ent.text,
-    //       worthiness: ent.worthiness,
-    //       date: ent.date,
-    //     ),
-    //   );
-    // }
-    // return list;
+  }
+
+  Future<List<Entry>> refreshSelectedMonth(DateTime dateTime) async {
+    _entries.forEach((element) {
+      if (element.date.month == dateTime.month &&
+          element.date.year == dateTime.year) {
+        _entries.remove(element);
+      }
+    });
+
+    filterByMonth(dateTime);
+
+    return _entries;
   }
 
 //build circular chart (breakdown entries into lines then sum total)
@@ -158,26 +156,23 @@ class Entries with ChangeNotifier {
   }
 
 //construct bar chart (breakdown all entries into total sum of bank, tng, cash and others)
-  EntryTypeMonthChart getEntryTypeChart(List<Entry> entries) {
-    EntryTypeMonthChart entryTypeMonthChart = EntryTypeMonthChart(
-      entryTypeList: [],
-      month: DateTime.now(),
-    );
+  EntryTypeMonthChart getEntryTypeChart(
+      List<Entry> entries, DateTime selected) {
+    EntryTypeMonthChart chart = entriesByMonth(entries, selected);
+    chart.entryTypeList = chart.recalculatePaymentModeTotal();
 
-    // for (Entry ent in entries.where((element) =>
-    //     element.date.month == dateTime.month &&
-    //     element.date.year == dateTime.year)) {
-    //   entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-    //   entryTypeMonthChart.month = DateTime.now();
-    // }
+    return chart;
+  }
+
+  EntryTypeMonthChart entriesByMonth(List<Entry> entries, DateTime selected) {
+    EntryTypeMonthChart entryTypeMonthChart =
+        EntryTypeMonthChart(entryTypeList: List.empty(growable: true));
 
     for (Entry ent in entries) {
-      entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-      entryTypeMonthChart.month = DateTime.now();
+      if (ent.date.month == selected.month && ent.date.year == selected.year) {
+        entryTypeMonthChart.entryTypeList.addAll(Entry.getEntryType(ent));
+      }
     }
-    entryTypeMonthChart.entryTypeList =
-        Entry.cleanEntryType(entryTypeMonthChart.entryTypeList);
-
     return entryTypeMonthChart;
   }
 
@@ -185,15 +180,14 @@ class Entries with ChangeNotifier {
   EntryTypeMonthChart getTopEntry(List<Entry> entries, DateTime dateTime) {
     EntryTypeMonthChart entryTypeMonthChart = EntryTypeMonthChart(
       entryTypeList: [],
-      month: DateTime.now(),
     );
 
     for (Entry ent in entries.where((element) =>
         element.date.month == dateTime.month &&
         element.date.year == dateTime.year)) {
-      entryTypeMonthChart.entryTypeList += (Entry.getEntryType(ent));
-      entryTypeMonthChart.month = DateTime.now();
+      entryTypeMonthChart.entryTypeList.addAll(Entry.getEntryType(ent));
     }
+
     entryTypeMonthChart.entryTypeList.sort(
       (a, b) => a.total.compareTo(b.total),
     );
@@ -217,6 +211,10 @@ class Entries with ChangeNotifier {
       total += item.total;
     }
     return total;
+  }
+
+  Entry findEntryFromSortedEntryType(List<EntryTypeChart> typeList, int index) {
+    return _entries.firstWhere((element) => element.id == typeList[index].id);
   }
 
   void clearEntriesCache() {

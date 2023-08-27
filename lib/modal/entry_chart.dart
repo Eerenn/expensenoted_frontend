@@ -1,3 +1,5 @@
+import 'entry_modal.dart';
+
 class EntryChart {
   DateTime date;
   double total;
@@ -11,12 +13,14 @@ class EntryChart {
 enum EntryType { bank, cash, tng, other }
 
 class EntryTypeChart {
+  String id;
   EntryType type;
   String entry;
   double total;
   DateTime dateTime;
 
   EntryTypeChart({
+    required this.id,
     required this.type,
     required this.entry,
     required this.total,
@@ -26,11 +30,9 @@ class EntryTypeChart {
 
 class EntryTypeMonthChart {
   List<EntryTypeChart> entryTypeList;
-  DateTime month;
 
   EntryTypeMonthChart({
     required this.entryTypeList,
-    required this.month,
   });
 
   double overallSpent(EntryType et) {
@@ -43,5 +45,25 @@ class EntryTypeMonthChart {
         .total;
 
     return typeTotal / total;
+  }
+
+  List<EntryTypeChart> recalculatePaymentModeTotal() {
+    List<EntryTypeChart> newList = [];
+    for (var paymentMode in EntryType.values) {
+      EntryTypeChart consolidatedPaymentType = EntryTypeChart(
+          id: '',
+          type: paymentMode,
+          entry: '',
+          total: 0.0,
+          dateTime: DateTime.now());
+      for (EntryTypeChart type in entryTypeList) {
+        if (type.type.name == paymentMode.name) {
+          consolidatedPaymentType.total += type.total;
+        }
+      }
+      newList.add(consolidatedPaymentType);
+    }
+
+    return newList;
   }
 }
