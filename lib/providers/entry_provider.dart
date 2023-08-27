@@ -167,7 +167,6 @@ class Entries with ChangeNotifier {
   EntryTypeMonthChart entriesByMonth(List<Entry> entries, DateTime selected) {
     EntryTypeMonthChart entryTypeMonthChart =
         EntryTypeMonthChart(entryTypeList: List.empty(growable: true));
-
     for (Entry ent in entries) {
       if (ent.date.month == selected.month && ent.date.year == selected.year) {
         entryTypeMonthChart.entryTypeList.addAll(Entry.getEntryType(ent));

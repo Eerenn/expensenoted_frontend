@@ -30,7 +30,6 @@ class EntryTypeChart {
 
 class EntryTypeMonthChart {
   List<EntryTypeChart> entryTypeList;
-
   EntryTypeMonthChart({
     required this.entryTypeList,
   });
@@ -65,5 +64,10 @@ class EntryTypeMonthChart {
     }
 
     return newList;
+  }
+
+  Entry findEntryFromSortedEntryType(List<Entry> entries, int index) {
+    return entries
+        .firstWhere((element) => element.id == entryTypeList[index].id);
   }
 }
