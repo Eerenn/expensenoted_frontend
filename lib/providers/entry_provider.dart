@@ -100,8 +100,6 @@ class Entries with ChangeNotifier {
         );
         _entries.addAll(entriesList
             .where((entry) => _entries.every((e) => entry.id != e.id)));
-
-        notifyListeners();
       }
     } catch (_) {
     } finally {
